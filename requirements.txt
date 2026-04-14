@@ -9,3 +9,5 @@ pytest
 gdal
 geopy
 flask
+perlin-numpy
+gdal

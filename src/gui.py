@@ -135,7 +135,7 @@ def interactive_interferogram(event_type: str = "quake") -> None:
         'opening'     : 0.5
     }
 
-    fig, [axs_unwrapped, axs_wrapped] = plt.subplots(1, 2, sharex=True, sharey=True, tight_layout=True)
+    fig, [axs_unwrapped, axs_wrapped] = plt.subplots(1, 2, sharex=True, sharey=True, tight_layout=False)
 
     axs_unwrapped.set_title("unwrapped")
     axs_unwrapped.set_position([0.05, 0.45, 0.5, 0.5])

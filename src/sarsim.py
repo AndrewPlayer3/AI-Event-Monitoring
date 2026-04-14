@@ -867,14 +867,14 @@ def gen_simulated_deformation(
     Event = Okada(event_type, (source_x, source_y), tile_size = tile_size, **kwargs)
     end   = perf_counter()
 
-    los_grid = Event.los_displacement * amplitude_scalar * [-1, -1][random_nums[7] < 0.5] * 0.5
-
+    los_grid = Event.los_displacement * amplitude_scalar * [-1, 1][random_nums[7] < 0.5] * 0.5
     masked_indices    = np.abs(los_grid) >= np.pi * 2
     n_masked_indices  = np.abs(los_grid) < np.pi * 2
-    no_masked_indices = los_grid <  np.pi * 2
 
-    if event_type == 'quake':
-        los_grid[no_masked_indices] = 0
+    # Potentially re-enable for this when generating training data
+    # no_masked_indices = np.abs(los_grid) < np.pi * 2
+    # if event_type == 'quake':
+    #     los_grid[no_masked_indices] = 0
     masked_grid[masked_indices] = 1
 
     atmosphere_phase = aps_simulate(tile_size) * atmosphere_scalar
@@ -889,15 +889,9 @@ def gen_simulated_deformation(
     masked_grid[masked_indices]        = 1
     masked_grid[n_masked_indices2]     = 1
     masked_grid[n_masked_indices]      = 0
-    # masked_grid[coh_masked_indices]    = 0
     interferogram[coh_masked_indices]  = 0
 
-    wrapped_grid = np.angle(np.exp(1j * (interferogram)))
-
-    # zeros = wrapped_grid == 0
-    # wrapped_grid += np.pi
-    # wrapped_grid /= (2 * np.pi)
-    # wrapped_grid[zeros] = 0
+    wrapped_grid = np.angle(np.exp(-1j * (interferogram)))
 
     if log:
         print("__________\n")
@@ -1029,13 +1023,7 @@ def gen_sim_noise(
 
         wrapped_grid = np.angle(np.exp(1j * (phase)))
 
-
         masked_grid = np.zeros((tile_size, tile_size))
-
-    # zeros = wrapped_grid == 0
-    # wrapped_grid += np.pi
-    # wrapped_grid /= (2 * np.pi)
-    # wrapped_grid[zeros] = 0
 
     return phase, masked_grid, wrapped_grid, presence
 
@@ -1125,7 +1113,7 @@ def gen_simulated_time_series(
         mask[np.abs(phase) > np.pi] = 1
         
     else:
-        
+
         los_displacement = np.zeros((tile_size, tile_size))
 
     phases = np.zeros((n_interferograms, 2, tile_size, tile_size))
